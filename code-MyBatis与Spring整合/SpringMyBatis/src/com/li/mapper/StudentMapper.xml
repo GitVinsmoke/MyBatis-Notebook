@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace：命名空间，用于隔离sql，还有一个很重要的作用，后面解释 -->
+
+<mapper namespace="com.li.mapper.StudentMapper">
+
+	<!-- 结果映射 -->
+	<resultMap id="studentResultMap" type="Student">
+		<constructor>
+			<arg column="stu_no" name="no" javaType="string"/>
+			<arg column="stu_name" name="name" javaType="string"/>
+			<arg column="stu_age" name="age" javaType="int"/>
+  			<arg column="stu_gender" name="gender" javaType="string"/>
+		</constructor>
+  		<id property="no" column="stu_no"/>
+  		<result property="name" column="stu_name"/>
+  		<result property="age" column="stu_age"/>
+  		<result property="gender" column="stu_gender"/>
+	</resultMap>
+
+	<!-- id:statement的id 或者叫做sql的id-->
+	<!-- parameterType:声明输入参数的类型 -->
+	<!-- resultType:声明输出结果的类型，应该填写pojo的全路径 -->
+	<!-- #{}：输入参数的占位符，相当于jdbc的？ -->
+
+	<!-- 根据ID查找 -->
+	<select id="queryById" parameterType="string" resultMap="studentResultMap">
+		SELECT * FROM stu_info WHERE stu_no  = #{id, javaType=java.lang.String, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- （模糊查询）返回数据集合，只需设定为每一个元素的数据类型 -->
+	<select id="queryByBlurredName" parameterType="string" resultMap="studentResultMap">
+		<!-- 准确查询：select * from stu_info where stu_name like #{name} -->
+		select * from stu_info where stu_name like '%${value}%'
+	</select>
+
+	<!-- 插入操作 -->
+	<insert id="insertStu" parameterType="student">
+		<!-- 有多个参数，如果没有做映射关系的工作，则需要名称一样 -->
+		insert into stu_info (stu_no, stu_name, stu_age, stu_gender) values(#{no}, #{name}, #{age}, #{gender});
+	</insert>
+	
+	<!-- 删除操作 -->
+	<delete id="deleteStu" parameterType="string">
+		delete from stu_info where stu_no=#{id}
+	</delete>
+
+	<!-- 更新操作 -->
+	<update id="updateName" parameterType="student">
+		update stu_info set stu_name=#{name} where stu_no=#{no}
+	</update>
+
+</mapper>
